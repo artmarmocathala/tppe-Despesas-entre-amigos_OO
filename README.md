@@ -4,6 +4,8 @@
 
 [UML](./docs/assets/UML.png)
 
+[Histórias de Usuário](./docs/userStories.md)
+
 ## Dependências
 
 Docker e docker compose
