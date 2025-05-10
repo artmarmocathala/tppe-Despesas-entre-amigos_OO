@@ -2,6 +2,8 @@
 
 ## Documentação
 
+[UML](./docs/assets/UML.png)
+
 ## Dependências
 
 Docker e docker compose
