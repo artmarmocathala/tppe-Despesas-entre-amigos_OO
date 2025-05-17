@@ -27,19 +27,6 @@ Docker e docker compose para gerenciar os serviços
 2. Instalar as dependências
 3. Na raiz do projeto:
     ```bash
-    docker-compose up --build
+    sudo docker-compose up --build
     ```
 4. Acessar a api por http://localhost:5000 e banco em localhost:5432
-
-### Como rodar 2: o teste agora é outro
-
-1. Mesmos passos 1 e 2
-2. Na raiz do projeto:
-    ```bash
-    sudo docker-compose build backend
-    ```
-3. Na raiz do projeto:
-    ```bash
-    sudo docker-compose run --rm backend pytest
-    ```
-    (No momento o Pytest funciona, mas não está encontrando o arquivo de testes).
