@@ -2,7 +2,7 @@
 
 ## Documentação
 
-[UML](./docs/assets/Diagrama_de_Classes_UML.pdf)
+[UML](./docs/assets/Diagrama_de_Classes_UML_Final.pdf)
 
 [Histórias de Usuário](./docs/userStories.md)
 
