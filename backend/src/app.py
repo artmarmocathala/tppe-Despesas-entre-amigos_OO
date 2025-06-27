@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, abort
 from flask_migrate import Migrate
 from models import db
 from datetime import datetime
+from flask_swagger_ui import get_swaggerui_blueprint
 
 
 def create_app(database_uri=None):
@@ -198,6 +199,17 @@ def create_app(database_uri=None):
         db.session.delete(imovel)
         db.session.commit()
         return jsonify({'message': 'Despesa de imóvel deletada com sucesso.'}), 200
+
+
+    from flask_swagger_ui import get_swaggerui_blueprint
+    SWAGGER_URL = '/swagger'
+    API_URL = '/static/swagger.yaml'
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={'app_name': "Despesas entre Amigos API"}
+    )
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
     return app
 

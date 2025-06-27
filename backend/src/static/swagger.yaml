@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  title: API Despesas entre Amigos
+  version: 1.0.0
+paths:
+  /grupos:
+    get:
+      summary: Lista todos os grupos
+      responses:
+        '200':
+          description: Lista de grupos
+    post:
+      summary: Cria um novo grupo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                max_pessoas:
+                  type: integer
+      responses:
+        '201':
+          description: Grupo criado
+  /grupos/{grupo_id}:
+    put:
+      summary: Atualiza um grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                max_pessoas:
+                  type: integer
+      responses:
+        '200':
+          description: Grupo atualizado
+    delete:
+      summary: Deleta um grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Grupo deletado
+  /grupos/{grupo_id}/pessoas:
+    get:
+      summary: Lista pessoas do grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de pessoas
+    post:
+      summary: Adiciona pessoa ao grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+      responses:
+        '201':
+          description: Pessoa criada
+  /pessoas/{pessoa_id}:
+    put:
+      summary: Atualiza pessoa
+      parameters:
+        - in: path
+          name: pessoa_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+      responses:
+        '200':
+          description: Pessoa atualizada
+    delete:
+      summary: Deleta pessoa
+      parameters:
+        - in: path
+          name: pessoa_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pessoa deletada
+  /grupos/{grupo_id}/despesas/compras:
+    post:
+      summary: Registra compra
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                valor:
+                  type: number
+                data:
+                  type: string
+                  format: date
+                pagador_id:
+                  type: integer
+                nome_mercado:
+                  type: string
+                itens:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Compra registrada
+  /grupos/{grupo_id}/despesas/imoveis:
+    post:
+      summary: Registra despesa de imóvel
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                valor:
+                  type: number
+                data:
+                  type: string
+                  format: date
+                pagador_id:
+                  type: integer
+                endereco:
+                  type: string
+      responses:
+        '201':
+          description: Despesa de imóvel registrada
+  /grupos/{grupo_id}/despesas:
+    get:
+      summary: Lista despesas do grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de despesas
+  /despesas/compras/{compra_id}:
+    delete:
+      summary: Deleta compra
+      parameters:
+        - in: path
+          name: compra_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Compra deletada
+  /despesas/imoveis/{imovel_id}:
+    delete:
+      summary: Deleta despesa de imóvel
+      parameters:
+        - in: path
+          name: imovel_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Despesa de imóvel deletada
