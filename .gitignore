@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 *.cpython-*.pyc
 *.cpython-*.so
+migrations/__pycache__/
 
 # C extensions
 *.so
