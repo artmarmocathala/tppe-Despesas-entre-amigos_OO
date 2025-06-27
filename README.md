@@ -29,4 +29,4 @@ Docker e docker compose para gerenciar os serviços
     ```bash
     sudo docker-compose up --build
     ```
-4. Acessar a api por http://localhost:5000 e banco em localhost:5432
+4. Acessar a api por http://localhost:5000, banco em localhost:5432 e swagger em http://localhost:5000/swagger
