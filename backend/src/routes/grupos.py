@@ -22,12 +22,22 @@ def listar_grupos():
     grupos = Grupo.query.all()
     return jsonify([grupo.to_dict() for grupo in grupos])
 
+
 @grupos_bp.route('/grupos/<int:grupo_id>', methods=['GET'])
 def obter_grupo(grupo_id):
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
         abort(404)
     return jsonify(grupo.to_dict())
+
+
+@grupos_bp.route('/grupos/<int:grupo_id>/divisao', methods=['GET'])
+def dividir_despesas(grupo_id):
+    """Retorna as despesas divididas entre as pessoas do grupo"""
+    grupo = db.session.get(Grupo, grupo_id)
+    if not grupo:
+        abort(404)
+    return jsonify(grupo.dividir_despesas())
 
 
 @grupos_bp.route('/grupos/<int:grupo_id>', methods=['PUT'])

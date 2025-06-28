@@ -352,3 +352,28 @@ paths:
       responses:
         '200':
           description: Usuário deletado
+  /grupos/{grupo_id}/divisao:
+    get:
+      summary: Retorna a divisão das despesas do grupo
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Resultado da divisão das despesas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_despesas:
+                    type: number
+                  valor_por_pessoa:
+                    type: number
+                  qtd_pessoas:
+                    type: integer
+        '404':
+          description: Grupo não encontrado
