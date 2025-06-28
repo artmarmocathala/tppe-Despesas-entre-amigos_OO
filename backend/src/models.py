@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
 
 
@@ -51,7 +52,7 @@ class Despesa(db.Model):
     tipo = db.Column(db.String(50))
     grupo_id = db.Column(db.Integer, db.ForeignKey('grupos.id'), nullable=False)
     pagador_id = db.Column(db.Integer, db.ForeignKey('pessoas.id'), nullable=False)
-    
+
     grupo = db.relationship('Grupo', back_populates='despesas')
     pagador = db.relationship('Pessoa', back_populates='despesas_pagas')
 
