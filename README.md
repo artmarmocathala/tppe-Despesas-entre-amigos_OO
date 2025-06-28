@@ -10,6 +10,8 @@
 
 [Figma](https://www.figma.com/design/sp5GcAfsKQ9wpbsZPGkZbW/Crud-Operations--Community-?node-id=0-1&t=utFQ270dlViKNaR4-1)
 
+[PDF do Figma](./docs/assets/Despesas-entre-Amigos.pdf)
+
 ## Dependências
 
 Docker e docker compose
