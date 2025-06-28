@@ -5,12 +5,33 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
+class Usuario(db.Model):
+    __tablename__ = 'usuarios'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    senha = db.Column(db.String(128), nullable=False)
+    is_superuser = db.Column(db.Boolean, default=False)
+    grupos = db.relationship('Grupo', back_populates='usuario')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'email': self.email,
+            'is_superuser': self.is_superuser
+        }
+
+
 class Grupo(db.Model):
     __tablename__ = 'grupos'
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     max_pessoas = db.Column(db.Integer)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=True)
+    usuario = db.relationship('Usuario', back_populates='grupos')
     pessoas = db.relationship('Pessoa', back_populates='grupo')
     despesas = db.relationship('Despesa', back_populates='grupo')
 
@@ -19,6 +40,7 @@ class Grupo(db.Model):
             'id': self.id,
             'nome': self.nome,
             'max_pessoas': self.max_pessoas,
+            'usuario_id': self.usuario_id,
             'qtd_pessoas': len(self.pessoas),
             'qtd_despesas': len(self.despesas)
         }

@@ -15,9 +15,11 @@ def create_app(database_uri=None):
     from routes.grupos import grupos_bp
     from routes.pessoas import pessoas_bp
     from routes.despesas import despesas_bp
+    from routes.usuarios import usuarios_bp
     app.register_blueprint(grupos_bp)
     app.register_blueprint(pessoas_bp)
     app.register_blueprint(despesas_bp)
+    app.register_blueprint(usuarios_bp)
 
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.yaml'
