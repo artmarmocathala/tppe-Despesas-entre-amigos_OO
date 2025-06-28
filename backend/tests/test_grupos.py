@@ -42,7 +42,6 @@ def test_criar_listar_grupo(client):
     grupos = resp.get_json()
     assert any(g['id'] == grupo_id for g in grupos)
 
-
     resp = client.get(f'/grupos/{grupo_id}')
     assert resp.status_code == 200
     grupo = resp.get_json()

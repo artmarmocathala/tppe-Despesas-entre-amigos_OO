@@ -61,7 +61,7 @@ def listar_despesas(grupo_id):
     return jsonify(despesas)
 
 
-@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=[ 'GET'])
+@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=['GET'])
 def obter_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:

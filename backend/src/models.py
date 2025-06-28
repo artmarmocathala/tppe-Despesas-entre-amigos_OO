@@ -44,14 +44,13 @@ class Grupo(db.Model):
             'qtd_pessoas': len(self.pessoas),
             'qtd_despesas': len(self.despesas)
         }
-        
-        
+
     def dividir_despesas(self):
         total_despesas = sum(d.valor for d in self.despesas)
         qtd_pessoas = len(self.pessoas)
         if qtd_pessoas == 0:
             return {'error': 'Nenhuma pessoa no grupo para dividir as despesas'}
-        
+
         valor_por_pessoa = total_despesas / qtd_pessoas
         return {
             'total_despesas': total_despesas,

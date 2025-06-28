@@ -1,8 +1,8 @@
+from app import create_app
+from models import db, Usuario
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-from app import create_app
-from models import db, Usuario
 import pytest
 
 
