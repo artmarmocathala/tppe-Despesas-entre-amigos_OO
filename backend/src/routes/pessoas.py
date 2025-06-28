@@ -29,6 +29,14 @@ def listar_pessoas(grupo_id):
     return jsonify([pessoa.to_dict() for pessoa in pessoas])
 
 
+@pessoas_bp.route('/pessoas/<int:pessoa_id>', methods=['GET'])
+def obter_pessoa(pessoa_id):
+    pessoa = db.session.get(Pessoa, pessoa_id)
+    if not pessoa:
+        abort(404)
+    return jsonify(pessoa.to_dict())
+
+
 @pessoas_bp.route('/pessoas/<int:pessoa_id>', methods=['PUT'])
 def atualizar_pessoa(pessoa_id):
     pessoa = db.session.get(Pessoa, pessoa_id)

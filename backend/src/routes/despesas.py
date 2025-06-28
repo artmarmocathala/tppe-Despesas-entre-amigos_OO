@@ -61,6 +61,22 @@ def listar_despesas(grupo_id):
     return jsonify(despesas)
 
 
+@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=[ 'GET'])
+def obter_compra(compra_id):
+    compra = db.session.get(Compra, compra_id)
+    if not compra:
+        abort(404)
+    return jsonify(compra.to_dict())
+
+
+@despesas_bp.route('/despesas/imoveis/<int:imovel_id>', methods=['GET'])
+def obter_imovel(imovel_id):
+    imovel = db.session.get(Imovel, imovel_id)
+    if not imovel:
+        abort(404)
+    return jsonify(imovel.to_dict())
+
+
 @despesas_bp.route('/despesas/compras/<int:compra_id>', methods=['DELETE'])
 def deletar_compra(compra_id):
     compra = db.session.get(Compra, compra_id)

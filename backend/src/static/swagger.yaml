@@ -26,6 +26,19 @@ paths:
         '201':
           description: Grupo criado
   /grupos/{grupo_id}:
+    get:
+      summary: Obtém um grupo pelo id
+      parameters:
+        - in: path
+          name: grupo_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Grupo encontrado
+        '404':
+          description: Grupo não encontrado
     put:
       summary: Atualiza um grupo
       parameters:
@@ -94,6 +107,19 @@ paths:
         '201':
           description: Pessoa criada
   /pessoas/{pessoa_id}:
+    get:
+      summary: Obtém uma pessoa pelo id
+      parameters:
+        - in: path
+          name: pessoa_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pessoa encontrada
+        '404':
+          description: Pessoa não encontrada
     put:
       summary: Atualiza pessoa
       parameters:
@@ -200,6 +226,19 @@ paths:
         '200':
           description: Lista de despesas
   /despesas/compras/{compra_id}:
+    get:
+      summary: Obtém uma compra pelo id
+      parameters:
+        - in: path
+          name: compra_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Compra encontrada
+        '404':
+          description: Compra não encontrada
     delete:
       summary: Deleta compra
       parameters:
@@ -212,6 +251,19 @@ paths:
         '200':
           description: Compra deletada
   /despesas/imoveis/{imovel_id}:
+    get:
+      summary: Obtém uma despesa de imóvel pelo id
+      parameters:
+        - in: path
+          name: imovel_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Despesa de imóvel encontrada
+        '404':
+          description: Despesa de imóvel não encontrada
     delete:
       summary: Deleta despesa de imóvel
       parameters:

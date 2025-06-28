@@ -44,6 +44,14 @@ def test_adicionar_listar_pessoa(client):
     pessoas = resp.get_json()
     assert any(p['id'] == pessoa_id for p in pessoas)
 
+    # Testa GET /pessoas/<pessoa_id>
+    resp = client.get(f'/pessoas/{pessoa_id}')
+    assert resp.status_code == 200
+    pessoa = resp.get_json()
+    assert pessoa['id'] == pessoa_id
+    assert pessoa['nome'] == "Maria"
+    assert pessoa['cpf'] == "12345678901"
+
 
 def test_deletar_pessoa(client):
     resp = client.post('/grupos', json={"nome": "Grupo Del"})

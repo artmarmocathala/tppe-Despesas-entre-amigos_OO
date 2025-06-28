@@ -22,6 +22,13 @@ def listar_grupos():
     grupos = Grupo.query.all()
     return jsonify([grupo.to_dict() for grupo in grupos])
 
+@grupos_bp.route('/grupos/<int:grupo_id>', methods=['GET'])
+def obter_grupo(grupo_id):
+    grupo = db.session.get(Grupo, grupo_id)
+    if not grupo:
+        abort(404)
+    return jsonify(grupo.to_dict())
+
 
 @grupos_bp.route('/grupos/<int:grupo_id>', methods=['PUT'])
 def atualizar_grupo(grupo_id):
