@@ -6,7 +6,8 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 def create_app(database_uri=None):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri or 'postgresql://tppe:escondidinho@db/db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri or \
+        'postgresql://tppe:escondidinho@db/db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)

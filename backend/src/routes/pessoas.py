@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from models import db, Pessoa, Grupo
 
-
 pessoas_bp = Blueprint('pessoas', __name__)
 
 
@@ -12,7 +11,9 @@ def adicionar_pessoa(grupo_id):
         abort(404)
     data = request.get_json()
     if grupo.max_pessoas and len(grupo.pessoas) >= grupo.max_pessoas:
-        return jsonify({'error': 'Grupo já atingiu o número máximo de pessoas'}), 400
+        return jsonify({
+            'error': 'Grupo já atingiu o número máximo de pessoas'
+        }), 400
     nova_pessoa = Pessoa(
         nome=data['nome'],
         cpf=data['cpf'],
@@ -56,4 +57,6 @@ def deletar_pessoa(pessoa_id):
         abort(404)
     db.session.delete(pessoa)
     db.session.commit()
-    return jsonify({'message': 'Pessoa deletada com sucesso.'}), 200
+    return jsonify({
+        'message': 'Pessoa deletada com sucesso.'
+    }), 200

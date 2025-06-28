@@ -6,7 +6,9 @@ from datetime import datetime
 despesas_bp = Blueprint('despesas', __name__)
 
 
-@despesas_bp.route('/grupos/<int:grupo_id>/despesas/compras', methods=['POST'])
+@despesas_bp.route(
+    '/grupos/<int:grupo_id>/despesas/compras', methods=['POST']
+)
 def registrar_compra(grupo_id):
     data = request.get_json()
     data_str = data.get('data')
@@ -29,7 +31,9 @@ def registrar_compra(grupo_id):
     return jsonify(nova_compra.to_dict()), 201
 
 
-@despesas_bp.route('/grupos/<int:grupo_id>/despesas/imoveis', methods=['POST'])
+@despesas_bp.route(
+    '/grupos/<int:grupo_id>/despesas/imoveis', methods=['POST']
+)
 def registrar_despesa_imovel(grupo_id):
     data = request.get_json()
     data_str = data.get('data')
@@ -51,7 +55,9 @@ def registrar_despesa_imovel(grupo_id):
     return jsonify(nova_despesa.to_dict()), 201
 
 
-@despesas_bp.route('/grupos/<int:grupo_id>/despesas', methods=['GET'])
+@despesas_bp.route(
+    '/grupos/<int:grupo_id>/despesas', methods=['GET']
+)
 def listar_despesas(grupo_id):
     despesas = []
     compras = Compra.query.filter_by(grupo_id=grupo_id).all()
@@ -61,7 +67,9 @@ def listar_despesas(grupo_id):
     return jsonify(despesas)
 
 
-@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=['GET'])
+@despesas_bp.route(
+    '/despesas/compras/<int:compra_id>', methods=['GET']
+)
 def obter_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:
@@ -69,7 +77,9 @@ def obter_compra(compra_id):
     return jsonify(compra.to_dict())
 
 
-@despesas_bp.route('/despesas/imoveis/<int:imovel_id>', methods=['GET'])
+@despesas_bp.route(
+    '/despesas/imoveis/<int:imovel_id>', methods=['GET']
+)
 def obter_imovel(imovel_id):
     imovel = db.session.get(Imovel, imovel_id)
     if not imovel:
@@ -77,21 +87,29 @@ def obter_imovel(imovel_id):
     return jsonify(imovel.to_dict())
 
 
-@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=['DELETE'])
+@despesas_bp.route(
+    '/despesas/compras/<int:compra_id>', methods=['DELETE']
+)
 def deletar_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:
         abort(404)
     db.session.delete(compra)
     db.session.commit()
-    return jsonify({'message': 'Compra deletada com sucesso.'}), 200
+    return jsonify({
+        'message': 'Compra deletada com sucesso.'
+    }), 200
 
 
-@despesas_bp.route('/despesas/imoveis/<int:imovel_id>', methods=['DELETE'])
+@despesas_bp.route(
+    '/despesas/imoveis/<int:imovel_id>', methods=['DELETE']
+)
 def deletar_imovel(imovel_id):
     imovel = db.session.get(Imovel, imovel_id)
     if not imovel:
         abort(404)
     db.session.delete(imovel)
     db.session.commit()
-    return jsonify({'message': 'Despesa de imóvel deletada com sucesso.'}), 200
+    return jsonify({
+        'message': 'Despesa de imóvel deletada com sucesso.'
+    }), 200

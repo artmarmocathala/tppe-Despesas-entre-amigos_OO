@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -14,6 +14,12 @@ class Usuario(db.Model):
     senha = db.Column(db.String(128), nullable=False)
     is_superuser = db.Column(db.Boolean, default=False)
     grupos = db.relationship('Grupo', back_populates='usuario')
+
+    def set_senha(self, senha):
+        self.senha = generate_password_hash(senha)
+
+    def verificar_senha(self, senha):
+        return check_password_hash(self.senha, senha)
 
     def to_dict(self):
         return {
@@ -30,7 +36,9 @@ class Grupo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     max_pessoas = db.Column(db.Integer)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=True)
+    usuario_id = db.Column(
+        db.Integer, db.ForeignKey('usuarios.id'), nullable=True
+    )
     usuario = db.relationship('Usuario', back_populates='grupos')
     pessoas = db.relationship('Pessoa', back_populates='grupo')
     despesas = db.relationship('Despesa', back_populates='grupo')
@@ -49,8 +57,9 @@ class Grupo(db.Model):
         total_despesas = sum(d.valor for d in self.despesas)
         qtd_pessoas = len(self.pessoas)
         if qtd_pessoas == 0:
-            return {'error': 'Nenhuma pessoa no grupo para dividir as despesas'}
-
+            return {
+                'error': 'Nenhuma pessoa no grupo para dividir as despesas'
+            }
         valor_por_pessoa = total_despesas / qtd_pessoas
         return {
             'total_despesas': total_despesas,
@@ -65,7 +74,9 @@ class Pessoa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     cpf = db.Column(db.String(11), nullable=False, unique=True)
-    grupo_id = db.Column(db.Integer, db.ForeignKey('grupos.id'), nullable=False)
+    grupo_id = db.Column(
+        db.Integer, db.ForeignKey('grupos.id'), nullable=False
+    )
     grupo = db.relationship('Grupo', back_populates='pessoas')
     despesas_pagas = db.relationship('Despesa', back_populates='pagador')
 
@@ -83,10 +94,16 @@ class Despesa(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     valor = db.Column(db.Float, nullable=False)
-    data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    data = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow
+    )
     tipo = db.Column(db.String(50))
-    grupo_id = db.Column(db.Integer, db.ForeignKey('grupos.id'), nullable=False)
-    pagador_id = db.Column(db.Integer, db.ForeignKey('pessoas.id'), nullable=False)
+    grupo_id = db.Column(
+        db.Integer, db.ForeignKey('grupos.id'), nullable=False
+    )
+    pagador_id = db.Column(
+        db.Integer, db.ForeignKey('pessoas.id'), nullable=False
+    )
 
     grupo = db.relationship('Grupo', back_populates='despesas')
     pagador = db.relationship('Pessoa', back_populates='despesas_pagas')
@@ -100,7 +117,9 @@ class Despesa(db.Model):
 class Compra(Despesa):
     __tablename__ = 'compras'
 
-    id = db.Column(db.Integer, db.ForeignKey('despesas.id'), primary_key=True)
+    id = db.Column(
+        db.Integer, db.ForeignKey('despesas.id'), primary_key=True
+    )
     nome_mercado = db.Column(db.String(100))
     itens = db.Column(db.JSON)
 
@@ -124,7 +143,9 @@ class Compra(Despesa):
 class Imovel(Despesa):
     __tablename__ = 'imoveis'
 
-    id = db.Column(db.Integer, db.ForeignKey('despesas.id'), primary_key=True)
+    id = db.Column(
+        db.Integer, db.ForeignKey('despesas.id'), primary_key=True
+    )
     endereco = db.Column(db.String(200))
 
     __mapper_args__ = {

@@ -2,7 +2,9 @@ from app import create_app
 from models import db, Grupo
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
+)
 import pytest
 
 
@@ -31,7 +33,9 @@ def client(app):
 
 
 def test_criar_listar_grupo(client):
-    resp = client.post('/grupos', json={"nome": "Grupo Teste", "max_pessoas": 2})
+    resp = client.post(
+        '/grupos', json={"nome": "Grupo Teste", "max_pessoas": 2}
+    )
     assert resp.status_code == 201
     data = resp.get_json()
     assert data['nome'] == "Grupo Teste"
@@ -57,12 +61,16 @@ def test_deletar_grupo(client):
 
 
 def test_dividir_despesas_grupo(client):
-    # Cria grupo e pessoas
     resp = client.post('/grupos', json={"nome": "Grupo Divisao"})
     grupo_id = resp.get_json()['id']
-    pessoa1 = client.post(f'/grupos/{grupo_id}/pessoas', json={"nome": "A", "cpf": "11111111111"}).get_json()
-    pessoa2 = client.post(f'/grupos/{grupo_id}/pessoas', json={"nome": "B", "cpf": "22222222222"}).get_json()
-    # Adiciona despesas
+    pessoa1 = client.post(
+        f'/grupos/{grupo_id}/pessoas',
+        json={"nome": "A", "cpf": "11111111111"}
+    ).get_json()
+    pessoa2 = client.post(
+        f'/grupos/{grupo_id}/pessoas',
+        json={"nome": "B", "cpf": "22222222222"}
+    ).get_json()
     compra = {
         "valor": 100.0,
         "data": "2025-06-27",
@@ -78,7 +86,6 @@ def test_dividir_despesas_grupo(client):
         "endereco": "Rua 1"
     }
     client.post(f'/grupos/{grupo_id}/despesas/imoveis', json=imovel)
-    # Testa divisão
     resp = client.get(f'/grupos/{grupo_id}/divisao')
     assert resp.status_code == 200
     divisao = resp.get_json()

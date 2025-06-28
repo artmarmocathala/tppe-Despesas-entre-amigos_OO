@@ -47,7 +47,9 @@ def atualizar_grupo(grupo_id):
         abort(404)
     data = request.get_json()
     grupo.nome = data.get('nome', grupo.nome)
-    grupo.max_pessoas = data.get('max_pessoas', grupo.max_pessoas)
+    grupo.max_pessoas = data.get(
+        'max_pessoas', grupo.max_pessoas
+    )
     db.session.commit()
     return jsonify(grupo.to_dict())
 
@@ -63,4 +65,6 @@ def deletar_grupo(grupo_id):
         db.session.delete(pessoa)
     db.session.delete(grupo)
     db.session.commit()
-    return jsonify({'message': 'Grupo deletado com sucesso.'}), 200
+    return jsonify({
+        'message': 'Grupo deletado com sucesso.'
+    }), 200

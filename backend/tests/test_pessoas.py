@@ -1,8 +1,10 @@
 from app import create_app
-from models import db, Grupo, Pessoa
+from models import db, Pessoa, Grupo
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
+)
 import pytest
 
 
@@ -32,7 +34,9 @@ def client(app):
 
 
 def test_adicionar_listar_pessoa(client):
-    resp = client.post('/grupos', json={"nome": "Grupo Pessoas", "max_pessoas": 2})
+    resp = client.post(
+        '/grupos', json={"nome": "Grupo Pessoas", "max_pessoas": 2}
+    )
     grupo_id = resp.get_json()['id']
     resp = client.post(
         f'/grupos/{grupo_id}/pessoas',
@@ -44,7 +48,6 @@ def test_adicionar_listar_pessoa(client):
     pessoas = resp.get_json()
     assert any(p['id'] == pessoa_id for p in pessoas)
 
-    # Testa GET /pessoas/<pessoa_id>
     resp = client.get(f'/pessoas/{pessoa_id}')
     assert resp.status_code == 200
     pessoa = resp.get_json()

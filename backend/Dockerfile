@@ -20,10 +20,11 @@ COPY tests/ ./tests/
 #porta do flask
 EXPOSE 5000
 
-#rodar aplicação
- CMD echo "INFO: Executando testes antes de iniciar a aplicação..." && \
-     pytest tests/ && \
-     echo "INFO: Testes concluídos. Iniciando aplicação Flask..." && \
-     exec python app.py
+#rodar lint e aplicação
+CMD echo "INFO: Executando lint e testes..." && \
+    flake8 *.py ./routes/*.py tests/*.py --exclude=src/migrations || true && \
+    pytest tests/ && \
+    echo "INFO: Testes concluídos. Iniciando aplicação Flask..." && \
+    exec python app.py
 
 

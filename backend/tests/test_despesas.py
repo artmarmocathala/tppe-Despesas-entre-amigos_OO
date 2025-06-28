@@ -1,8 +1,10 @@
 from app import create_app
-from models import db, Grupo, Pessoa, Compra, Imovel
+from models import db, Compra, Imovel, Grupo, Pessoa
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'))
+)
 import pytest
 
 
@@ -48,20 +50,19 @@ def test_registrar_listar_obter_deletar_compra(client):
         "nome_mercado": "Mercado X",
         "itens": ["arroz", "feijão"]
     }
-    resp = client.post(f'/grupos/{grupo_id}/despesas/compras', json=compra)
+    resp = client.post(
+        f'/grupos/{grupo_id}/despesas/compras', json=compra
+    )
     assert resp.status_code == 201
     compra_id = resp.get_json()['id']
-    # Testa GET individual
     resp = client.get(f'/despesas/compras/{compra_id}')
     assert resp.status_code == 200
     compra_resp = resp.get_json()
     assert compra_resp['id'] == compra_id
     assert compra_resp['nome_mercado'] == "Mercado X"
-    # Listar despesas
     resp = client.get(f'/grupos/{grupo_id}/despesas')
     despesas = resp.get_json()
     assert any(d['id'] == compra_id for d in despesas)
-    # Deletar compra
     resp = client.delete(f'/despesas/compras/{compra_id}')
     assert resp.status_code == 200
     resp = client.get(f'/grupos/{grupo_id}/despesas')
@@ -83,20 +84,19 @@ def test_registrar_listar_obter_deletar_imovel(client):
         "pagador_id": pessoa_id,
         "endereco": "Rua XPTO, 123"
     }
-    resp = client.post(f'/grupos/{grupo_id}/despesas/imoveis', json=imovel)
+    resp = client.post(
+        f'/grupos/{grupo_id}/despesas/imoveis', json=imovel
+    )
     assert resp.status_code == 201
     imovel_id = resp.get_json()['id']
-    # Testa GET individual
     resp = client.get(f'/despesas/imoveis/{imovel_id}')
     assert resp.status_code == 200
     imovel_resp = resp.get_json()
     assert imovel_resp['id'] == imovel_id
     assert imovel_resp['endereco'] == "Rua XPTO, 123"
-    # Listar despesas
     resp = client.get(f'/grupos/{grupo_id}/despesas')
     despesas = resp.get_json()
     assert any(d['id'] == imovel_id for d in despesas)
-    # Deletar imovel
     resp = client.delete(f'/despesas/imoveis/{imovel_id}')
     assert resp.status_code == 200
     resp = client.get(f'/grupos/{grupo_id}/despesas')
