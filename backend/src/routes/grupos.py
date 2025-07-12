@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
-from models import db, Grupo
+from database import db
+from models import Grupo
 
 
 grupos_bp = Blueprint('grupos', __name__)

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
-from models import db
+from database import db
 from flask_swagger_ui import get_swaggerui_blueprint
 
 
@@ -34,7 +34,6 @@ def create_app(database_uri=None):
     return app
 
 
-app = create_app()
-
 if __name__ == '__main__':
+    app = create_app()
     app.run(host='0.0.0.0', port=5000)

@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
-from models import db, Compra, Imovel
+from database import db
+from models import Compra, Imovel
 from datetime import datetime
 
 
