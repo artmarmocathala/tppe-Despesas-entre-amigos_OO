@@ -6,6 +6,12 @@
 
 [Histórias de Usuário](./docs/userStories.md)
 
+[Diagrama Físico do Banco](./docs/assets/Diagrama_Fisico.pdf)
+
+[Figma](https://www.figma.com/design/sp5GcAfsKQ9wpbsZPGkZbW/Crud-Operations--Community-?node-id=0-1&t=utFQ270dlViKNaR4-1)
+
+[PDF do Figma](./docs/assets/Despesas-entre-Amigos.pdf)
+
 ## Dependências
 
 Docker e docker compose
@@ -29,4 +35,4 @@ Docker e docker compose para gerenciar os serviços
     ```bash
     sudo docker-compose up --build
     ```
-4. Acessar a api por http://localhost:5000 e banco em localhost:5432
+4. Acessar a api por http://localhost:5000, banco em localhost:5432 e swagger em http://localhost:5000/swagger
