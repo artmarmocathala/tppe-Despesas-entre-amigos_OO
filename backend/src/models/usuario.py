@@ -7,7 +7,7 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    senha = db.Column(db.String(128), nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
     is_superuser = db.Column(db.Boolean, default=False)
     grupos = db.relationship('Grupo', back_populates='usuario')
 
