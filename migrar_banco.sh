@@ -1,20 +1,19 @@
 #!/bin/bash
-
-# Script para rodar as migrações do banco de dados no container Docker
-# Uso: bash migrar_banco.sh
+# Script para GERAR uma nova migração.
+# Uso: ./migrar_banco.sh "mensagem"
 
 set -e
 
-# Inicializa as migrações (apenas na primeira vez)
-echo "[1/3] flask db init (pode ignorar se já existe a pasta migrations)"
-sudo docker compose exec backend flask db init || true
+if [ -z "$1" ]; then
+  echo "Erro: Forneça uma mensagem para a migração."
+  echo "Uso: $0 \"mensagem\""
+  exit 1
+fi
 
-# Gera as migrações
-echo "[2/3] flask db migrate -m 'Migracao Inicial'"
-sudo docker compose exec backend flask db migrate -m "Migracao Inicial"
+echo "[1/2] Gerando nova migração..."
+sudo docker compose exec backend flask db migrate -m "$1"
 
-# Aplica as migrações
-echo "[3/3] flask db upgrade"
+echo "[2/2] Aplicando a nova migração..."
 sudo docker compose exec backend flask db upgrade
 
-echo "Migrações aplicadas com sucesso!"
+echo "Nova migração gerada e aplicada com sucesso!"

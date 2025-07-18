@@ -24,7 +24,9 @@ EXPOSE 5000
 CMD echo "INFO: Executando lint e testes..." && \
     flake8 *.py ./routes/*.py tests/*.py --exclude=src/migrations || true && \
     pytest tests/ && \
-    echo "INFO: Testes concluídos. Iniciando aplicação Flask..." && \
+    echo "INFO: Testes concluídos. Aplicando migrações do banco de dados..." && \
+    flask db upgrade && \
+    echo "INFO: Migrações concluídas. Iniciando aplicação Flask..." && \
     exec python app.py
 
 
