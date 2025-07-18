@@ -2,10 +2,12 @@ from flask import Flask
 from flask_migrate import Migrate
 from database import db
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 
 def create_app(database_uri=None):
     app = Flask(__name__)
+    CORS(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri or \
         'postgresql://tppe:escondidinho@db/db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -142,3 +142,16 @@ desktop.ini
 # Log files
 *.log
 logs/
+
+#-----------------------------------------------------------------------------
+# Frontend / Node.js
+#-----------------------------------------------------------------------------
+
+# Dependências (instaladas via 'npm install')
+/frontend/node_modules
+
+# Build de produção
+/frontend/dist
+
+# Logs do NPM
+npm-debug.log*

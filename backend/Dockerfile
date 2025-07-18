@@ -9,8 +9,8 @@ ENV FLASK_ENV=development
 COPY src/requirements.txt .
 
 #instalar dependências e pacotes
-RUN apk update && apk upgrade --no-cache && \
-    apk add --no-cache postgresql-dev gcc python3-dev musl-dev && \
+#RUN apk update && apk upgrade --no-cache && \
+RUN apk add --no-cache postgresql-dev gcc python3-dev musl-dev && \
     pip install --no-cache-dir -r requirements.txt && \
     apk del gcc python3-dev musl-dev
 
