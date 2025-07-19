@@ -100,17 +100,17 @@ def atualizar_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:
         abort(404, description="Compra não encontrada")
-    
+
     data = request.get_json()
     compra.valor = data.get('valor', compra.valor)
     if data.get('data'):
         compra.data = datetime.fromisoformat(data.get('data'))
     compra.pagador_id = data.get('pagador_id', compra.pagador_id)
     compra.nome_mercado = data.get('nome_mercado', compra.nome_mercado)
-    
+
     if 'itens' in data:
         compra.itens = data['itens']
-    
+
     db.session.commit()
     return jsonify(compra.to_dict())
 
@@ -128,7 +128,7 @@ def atualizar_imovel(imovel_id):
         imovel.data = datetime.fromisoformat(data.get('data'))
     imovel.pagador_id = data.get('pagador_id', imovel.pagador_id)
     imovel.endereco = data.get('endereco', imovel.endereco)
-    
+
     db.session.commit()
     return jsonify(imovel.to_dict())
 

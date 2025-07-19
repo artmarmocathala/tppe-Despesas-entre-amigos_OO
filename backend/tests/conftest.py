@@ -1,7 +1,6 @@
 import pytest
 from app import create_app
 from database import db as _db
-from models import Usuario
 
 
 # instancia de app pros testes
@@ -40,7 +39,8 @@ def auth_client(app, client):
         "senha": "password123"
     }
     resp_create = client.post('/usuarios/', json=user_data)
-    assert resp_create.status_code == 201, "Falha ao criar usuário de teste na fixture."
+    create_user_error = "Erro ao criar usuário de teste na fixture."
+    assert resp_create.status_code == 201, create_user_error
 
     login_data = {"email": "test@example.com", "senha": "password123"}
     resp_login = client.post('/login', json=login_data)
@@ -49,12 +49,12 @@ def auth_client(app, client):
     token = resp_login.get_json()['token']
     client.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {token}'
 
-    yield client 
+    yield client
     if 'HTTP_AUTHORIZATION' in client.environ_base:
         del client.environ_base['HTTP_AUTHORIZATION']
 
 
-# segundo cliente logado p testes com mais de um usuario     
+# segundo cliente logado p testes com mais de um usuario
 @pytest.fixture(scope='class')
 def auth_client_B(client):
     user_data = {
@@ -68,11 +68,9 @@ def auth_client_B(client):
     login_data = {"email": user_data['email'], "senha": user_data['senha']}
     resp_login = client.post('/login', json=login_data)
     assert resp_login.status_code == 200
-    
+
     client_b = client.application.test_client()
     token = resp_login.get_json()['token']
     client_b.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {token}'
-    
+
     return client_b
-
-

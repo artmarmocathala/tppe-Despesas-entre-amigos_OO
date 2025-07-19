@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify, abort
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 from database import db
-from models import Grupo, Pessoa, Despesa
+from models import Grupo
 
 
 grupos_bp = Blueprint('grupos', __name__)
+nao_autorizado = "Acesso não autorizado a este grupo."
 
 
 @grupos_bp.route('/', methods=['POST'])
@@ -28,10 +29,10 @@ def criar_grupo():
 def listar_grupos():
     usuario_id = get_jwt_identity()
     grupos = Grupo.query.options(
-        joinedload(Grupo.pessoas), 
+        joinedload(Grupo.pessoas),
         joinedload(Grupo.despesas)
     ).filter_by(usuario_id=int(usuario_id)).all()
-    #grupos = Grupo.query.filter_by(usuario_id=int(usuario_id)).all()
+    # grupos = Grupo.query.filter_by(usuario_id=int(usuario_id)).all()
     return jsonify([grupo.to_dict() for grupo in grupos])
 
 
@@ -43,9 +44,7 @@ def obter_grupo(grupo_id):
     if not grupo:
         abort(404)
     if str(grupo.usuario_id) != usuario_id:
-        abort(403, 
-              description=
-              "Acesso não autorizado a este grupo.")
+        abort(403, description=nao_autorizado)
     dados_grupo = grupo.to_dict()
     dados_grupo['pessoas'] = [p.to_dict() for p in grupo.pessoas]
     dados_grupo['despesas'] = [d.to_dict() for d in grupo.despesas]
@@ -62,9 +61,7 @@ def dividir_despesas(grupo_id):
     if not grupo:
         abort(404)
     if str(grupo.usuario_id) != usuario_id:
-        abort(403, 
-              description=
-              "Acesso não autorizado a este grupo.")
+        abort(403, description=nao_autorizado)
     return jsonify(grupo.dividir_despesas())
 
 
@@ -76,9 +73,7 @@ def atualizar_grupo(grupo_id):
     if not grupo:
         abort(404)
     if str(grupo.usuario_id) != usuario_id:
-        abort(403, 
-              description=
-              "Acesso não autorizado para editar este grupo.")
+        abort(403, description=nao_autorizado)
     data = request.get_json()
     grupo.nome = data.get('nome', grupo.nome)
     grupo.max_pessoas = data.get(
@@ -96,9 +91,7 @@ def deletar_grupo(grupo_id):
     if not grupo:
         abort(404)
     if str(grupo.usuario_id) != usuario_id:
-        abort(403, 
-              description=
-              "Acesso não autorizado para deletar este grupo.")
+        abort(403, description=nao_autorizado)
     for despesa in grupo.despesas:
         db.session.delete(despesa)
     for pessoa in grupo.pessoas:

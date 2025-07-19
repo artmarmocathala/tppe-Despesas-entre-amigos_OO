@@ -4,6 +4,7 @@ from flask_jwt_extended import create_access_token
 
 auth_bp = Blueprint('auth', __name__)
 
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -19,5 +20,5 @@ def login():
         return jsonify({"message": "Credenciais inválidas"}), 401
 
     access_token = create_access_token(identity=str(usuario.id))
-    
+
     return jsonify(token=access_token)
