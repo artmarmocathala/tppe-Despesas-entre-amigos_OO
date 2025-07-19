@@ -36,7 +36,8 @@ def auth_client(app, client):
     user_data = {
         "nome": "Test User",
         "email": "test@example.com",
-        "senha": "password123"
+        "senha": "password123",
+        "is_superuser": True
     }
     resp_create = client.post('/usuarios/', json=user_data)
     create_user_error = "Erro ao criar usuário de teste na fixture."
@@ -48,6 +49,7 @@ def auth_client(app, client):
 
     token = resp_login.get_json()['token']
     client.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {token}'
+    client._token = token 
 
     yield client
     if 'HTTP_AUTHORIZATION' in client.environ_base:

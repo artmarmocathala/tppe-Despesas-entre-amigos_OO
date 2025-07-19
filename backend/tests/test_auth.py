@@ -1,4 +1,6 @@
 import pytest
+import jwt
+from flask_jwt_extended import decode_token
 
 
 @pytest.fixture
@@ -6,7 +8,8 @@ def test_user(client):
     user_data = {
         "nome": "Login User",
         "email": "login@test.com",
-        "senha": "correct-password"
+        "senha": "correct-password",
+        "is_superuser": True
     }
     resp = client.post('/usuarios/', json=user_data)
     return user_data
@@ -21,6 +24,10 @@ def test_login_sucesso(client, test_user):
     assert resp.status_code == 200
     json_data = resp.get_json()
     assert 'token' in json_data
+    # Verifica se o claim is_superuser está presente e correto
+    token = json_data['token']
+    decoded = decode_token(token)
+    assert decoded['is_superuser'] is True
 
 
 def test_login_senha_incorreta(client, test_user):

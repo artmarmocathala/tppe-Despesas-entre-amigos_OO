@@ -19,6 +19,7 @@ def login():
     if not usuario or not usuario.verificar_senha(senha):
         return jsonify({"message": "Credenciais inválidas"}), 401
 
-    access_token = create_access_token(identity=str(usuario.id))
+    additional_claims = {"is_superuser": usuario.is_superuser}
+    access_token = create_access_token(identity=str(usuario.id), additional_claims=additional_claims)
 
     return jsonify(token=access_token)

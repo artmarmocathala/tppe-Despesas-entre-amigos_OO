@@ -25,19 +25,15 @@ export function Configuracoes() {
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('authToken');
-      const userId = getUserIdFromToken();
-
-      if (!token || !userId) { 
+      if (!token) { 
         navigate('/login'); 
         return; 
       }
-
       try {
-        const response = await fetch(`http://127.0.0.1:5000/usuarios/${userId}`, {
+        const response = await fetch(`http://127.0.0.1:5000/usuarios/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Falha ao buscar dados do perfil.');
-        
         const data = await response.json();
         setNome(data.nome);
         setEmail(data.email);

@@ -1,27 +1,34 @@
 import pytest
 
+
 class TestCompras:
     ids = {}
 
     @pytest.mark.dependency()
     def test_criar_compra(self, auth_client):
-        grupo_resp = auth_client.post('/grupos/', json={"nome": "Grupo de Compras"})
+        grupo_resp = auth_client.post('/grupos/', json={
+            "nome": "Grupo de Compras"
+            })
         assert grupo_resp.status_code == 201
         TestCompras.ids['grupo_id'] = grupo_resp.get_json()['id']
+        grupo_id = TestCompras.ids['grupo_id']
 
         pessoa_resp = auth_client.post(
-            f"/grupos/{TestCompras.ids['grupo_id']}/pessoas", 
+            f"/grupos/{grupo_id}/pessoas",
             json={"nome": "Comprador", "cpf": "11111111111"}
         )
         assert pessoa_resp.status_code == 201
         TestCompras.ids['pessoa_id'] = pessoa_resp.get_json()['id']
 
         compra_data = {
-            "valor": 125.50, "data": "2025-07-18", "pagador_id": TestCompras.ids['pessoa_id'], 
+            "valor": 125.50,
+            "data": "2025-07-18",
+            "pagador_id": TestCompras.ids['pessoa_id'],
             "nome_mercado": "Supermercado Teste",
             "itens": ["Leite", "Pão"]
         }
-        compra_resp = auth_client.post(f"/grupos/{TestCompras.ids['grupo_id']}/despesas/compras", json=compra_data)
+        compra_resp = auth_client.post(f"/grupos/{grupo_id}/despesas/compras",
+                                       json=compra_data)
         assert compra_resp.status_code == 201
         TestCompras.ids['compra_id'] = compra_resp.get_json()['id']
 
@@ -33,7 +40,7 @@ class TestCompras:
         data = resp.get_json()
         assert data['nome_mercado'] == "Supermercado Teste"
         assert data['itens'] == ["Leite", "Pão"]
-        
+
     @pytest.mark.dependency(depends=["TestCompras::test_criar_compra"])
     def test_atualizar_compra(self, auth_client):
         compra_id = TestCompras.ids['compra_id']
@@ -45,7 +52,8 @@ class TestCompras:
             "nome_mercado": "Mercado Atualizado",
             "itens": ["Leite", "Pão", "Queijo"]
         }
-        resp = auth_client.put(f'/despesas/compras/{compra_id}', json=update_data)
+        resp = auth_client.put(f'/despesas/compras/{compra_id}',
+                               json=update_data)
         assert resp.status_code == 200
         data = resp.get_json()
         assert data['valor'] == 150.00
@@ -67,27 +75,34 @@ class TestCompras:
         resp = auth_client.get(f'/despesas/compras/{compra_id}')
         assert resp.status_code == 404
 
+
 class TestImoveis:
     ids = {}
 
     @pytest.mark.dependency()
     def test_criar_imovel(self, auth_client):
-        grupo_resp = auth_client.post('/grupos/', json={"nome": "Grupo de Imóveis"})
+        grupo_resp = auth_client.post('/grupos/',
+                                      json={"nome": "Grupo de Imóveis"})
         assert grupo_resp.status_code == 201
         TestImoveis.ids['grupo_id'] = grupo_resp.get_json()['id']
+        grupo_id = TestImoveis.ids['grupo_id']
 
         pessoa_resp = auth_client.post(
-            f"/grupos/{TestImoveis.ids['grupo_id']}/pessoas", 
-            json={"nome": "Inquilino", "cpf": "22222222222"}
+            f"/grupos/{grupo_id}/pessoas",
+            json={"nome": "Inquilino",
+                  "cpf": "22222222222"}
         )
         assert pessoa_resp.status_code == 201
         TestImoveis.ids['pessoa_id'] = pessoa_resp.get_json()['id']
 
         imovel_data = {
-            "valor": 1500.00, "data": "2025-07-18", "pagador_id": TestImoveis.ids['pessoa_id'], 
+            "valor": 1500.00,
+            "data": "2025-07-18",
+            "pagador_id": TestImoveis.ids['pessoa_id'],
             "endereco": "Rua dos Testes, 123"
         }
-        imovel_resp = auth_client.post(f"/grupos/{TestImoveis.ids['grupo_id']}/despesas/imoveis", json=imovel_data)
+        imovel_resp = auth_client.post(f"/grupos/{grupo_id}/despesas/imoveis",
+                                       json=imovel_data)
         assert imovel_resp.status_code == 201
         TestImoveis.ids['imovel_id'] = imovel_resp.get_json()['id']
 
@@ -97,7 +112,7 @@ class TestImoveis:
         resp = auth_client.get(f'/despesas/imoveis/{imovel_id}')
         assert resp.status_code == 200
         assert resp.get_json()['endereco'] == "Rua dos Testes, 123"
-        
+
     @pytest.mark.dependency(depends=["TestImoveis::test_criar_imovel"])
     def test_atualizar_imovel(self, auth_client):
         imovel_id = TestImoveis.ids['imovel_id']
@@ -108,7 +123,8 @@ class TestImoveis:
             "pagador_id": pessoa_id,
             "endereco": "Avenida dos Testes, 456"
         }
-        resp = auth_client.put(f'/despesas/imoveis/{imovel_id}', json=update_data)
+        resp = auth_client.put(f'/despesas/imoveis/{imovel_id}',
+                               json=update_data)
         assert resp.status_code == 200
         data = resp.get_json()
         assert data['valor'] == 1600.00
