@@ -10,14 +10,14 @@
 *   **Para que** eu possa organizar e registrar os gastos compartilhados com um conjunto específico de pessoas.
 *   **Critérios de Aceitação:**
     *   O sistema deve permitir que eu insira um nome para o novo grupo.
-    *   O sistema pode permitir definir um número máximo de pessoas para o grupo (opcional, baseado no atributo `maxPessoas` da classe `Grupo`).
+    *   O sistema pode permitir definir um número máximo de pessoas para o grupo.
     *   Após a criação, o grupo deve aparecer na lista de grupos.
 
 ---
 
 **HU02: Listar Grupos Existentes**
 *   **Como um** usuário,
-*   **Eu quero** visualizar uma lista de todos os grupos de despesas que eu criei ou dos quais participo,
+*   **Eu quero** visualizar uma lista de todos os grupos de despesas que eu criei,
 *   **Para que** eu possa acessar rapidamente as informações e despesas de cada um.
 *   **Critérios de Aceitação:**
     *   A lista deve exibir o nome de cada grupo.
@@ -81,9 +81,9 @@
     *   Devo poder selecionar o grupo ao qual a despesa pertence.
     *   Devo poder informar o valor total da compra.
     *   Devo poder informar a data da compra.
-    *   Devo poder informar o CPF da pessoa que pagou a compra.
-    *   Devo poder listar os itens da compra (opcional, baseado no atributo `Itens` da classe `Compras`).
-    *   Devo poder informar o nome do mercado (opcional, baseado no atributo `nome_mercado`).
+    *   Devo poder informar a pessoa que pagou a compra.
+    *   Devo poder listar os itens da compra.
+    *   Devo poder informar o nome do mercado.
     *   A despesa registrada deve ser associada ao grupo e aumentar a quantidade de despesas do grupo.
 
 ---
@@ -97,7 +97,7 @@
     *   Devo poder informar o valor total da despesa do imóvel (ou valores individuais para aluguel, luz, água).
     *   Devo poder informar a data da despesa.
     *   Devo poder informar o CPF da pessoa que pagou a despesa.
-    *   Devo poder informar o endereço do imóvel (opcional, baseado no atributo `endereco`).
+    *   Devo poder informar o endereço do imóvel.
     *   A despesa registrada deve ser associada ao grupo e aumentar a quantidade de despesas do grupo.
 
 ---
