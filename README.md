@@ -2,11 +2,11 @@
 
 ## Documentação
 
-[UML](./docs/assets/Diagrama_de_Classes_UML_Final.pdf)
+[UML](./docs/assets/Diagrama_UML_Final.pdf)
 
 [Histórias de Usuário](./docs/userStories.md)
 
-[Diagrama Físico do Banco](./docs/assets/Diagrama_Fisico.pdf)
+[Diagrama Físico do Banco](./docs/assets/Diagrama_Fisico-1.pdf)
 
 [Figma](https://www.figma.com/design/sp5GcAfsKQ9wpbsZPGkZbW/Crud-Operations--Community-?node-id=0-1&t=utFQ270dlViKNaR4-1)
 
@@ -36,3 +36,5 @@ Docker e docker compose para gerenciar os serviços
     sudo docker-compose up --build
     ```
 4. Acessar a api por http://localhost:5000, banco em localhost:5432 e swagger em http://localhost:5000/swagger
+
+5. Acessar o front em http://localhost:5173
