@@ -30,6 +30,22 @@ class TestCompras:
         resp = auth_client.get(f'/despesas/compras/{compra_id}')
         assert resp.status_code == 200
         assert resp.get_json()['nome_mercado'] == "Supermercado Teste"
+        
+    @pytest.mark.dependency(depends=["TestCompras::test_criar_compra"])
+    def test_atualizar_compra(self, auth_client):
+        compra_id = TestCompras.ids['compra_id']
+        pessoa_id = TestCompras.ids['pessoa_id']
+        update_data = {
+            "valor": 150.00,
+            "data": "2025-07-19",
+            "pagador_id": pessoa_id,
+            "nome_mercado": "Mercado Atualizado"
+        }
+        resp = auth_client.put(f'/despesas/compras/{compra_id}', json=update_data)
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['valor'] == 150.00
+        assert data['nome_mercado'] == "Mercado Atualizado"
 
     @pytest.mark.dependency(depends=["TestCompras::test_criar_compra"])
     def test_listar_despesas_do_grupo(self, auth_client):
@@ -77,6 +93,22 @@ class TestImoveis:
         resp = auth_client.get(f'/despesas/imoveis/{imovel_id}')
         assert resp.status_code == 200
         assert resp.get_json()['endereco'] == "Rua dos Testes, 123"
+        
+    @pytest.mark.dependency(depends=["TestImoveis::test_criar_imovel"])
+    def test_atualizar_imovel(self, auth_client):
+        imovel_id = TestImoveis.ids['imovel_id']
+        pessoa_id = TestImoveis.ids['pessoa_id']
+        update_data = {
+            "valor": 1600.00,
+            "data": "2025-07-20",
+            "pagador_id": pessoa_id,
+            "endereco": "Avenida dos Testes, 456"
+        }
+        resp = auth_client.put(f'/despesas/imoveis/{imovel_id}', json=update_data)
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data['valor'] == 1600.00
+        assert data['endereco'] == "Avenida dos Testes, 456"
 
     @pytest.mark.dependency(depends=["TestImoveis::test_criar_imovel"])
     def test_deletar_imovel(self, auth_client):

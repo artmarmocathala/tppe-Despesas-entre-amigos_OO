@@ -29,18 +29,11 @@ def client(app):
 # Cliente p testes logados
 @pytest.fixture(scope='class')
 def auth_client(app, client):
-    """
-    Fixture autônoma que prepara o ambiente para uma classe de teste autenticada.
-    """
-    # ETAPA 1: Limpar o banco de dados. Esta operação precisa de um contexto manual.
     with app.app_context():
         for table in reversed(_db.metadata.sorted_tables):
             _db.session.execute(table.delete())
         _db.session.commit()
 
-    # ETAPA 2: Criar usuário e fazer login.
-    # Essas chamadas são feitas FORA do bloco 'with', permitindo que o 
-    # cliente gerencie seu próprio contexto sem conflitos.
     user_data = {
         "nome": "Test User",
         "email": "test@example.com",
@@ -56,9 +49,7 @@ def auth_client(app, client):
     token = resp_login.get_json()['token']
     client.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {token}'
 
-    yield client # O cliente configurado é usado por todos os testes na classe
-
-    # Limpeza (teardown) após a execução dos testes da classe
+    yield client 
     if 'HTTP_AUTHORIZATION' in client.environ_base:
         del client.environ_base['HTTP_AUTHORIZATION']
 

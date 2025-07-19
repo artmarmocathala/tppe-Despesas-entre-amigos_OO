@@ -94,6 +94,42 @@ def obter_imovel(imovel_id):
     return jsonify(imovel.to_dict())
 
 
+@despesas_bp.route('/despesas/compras/<int:compra_id>', methods=['PUT'])
+@jwt_required()
+def atualizar_compra(compra_id):
+    compra = db.session.get(Compra, compra_id)
+    if not compra:
+        abort(404, description="Compra não encontrada")
+    
+    data = request.get_json()
+    compra.valor = data.get('valor', compra.valor)
+    if data.get('data'):
+        compra.data = datetime.fromisoformat(data.get('data'))
+    compra.pagador_id = data.get('pagador_id', compra.pagador_id)
+    compra.nome_mercado = data.get('nome_mercado', compra.nome_mercado)
+    
+    db.session.commit()
+    return jsonify(compra.to_dict())
+
+
+@despesas_bp.route('/despesas/imoveis/<int:imovel_id>', methods=['PUT'])
+@jwt_required()
+def atualizar_imovel(imovel_id):
+    imovel = db.session.get(Imovel, imovel_id)
+    if not imovel:
+        abort(404, description="Despesa de imóvel não encontrada")
+
+    data = request.get_json()
+    imovel.valor = data.get('valor', imovel.valor)
+    if data.get('data'):
+        imovel.data = datetime.fromisoformat(data.get('data'))
+    imovel.pagador_id = data.get('pagador_id', imovel.pagador_id)
+    imovel.endereco = data.get('endereco', imovel.endereco)
+    
+    db.session.commit()
+    return jsonify(imovel.to_dict())
+
+
 @despesas_bp.route(
     '/despesas/compras/<int:compra_id>', methods=['DELETE']
 )
