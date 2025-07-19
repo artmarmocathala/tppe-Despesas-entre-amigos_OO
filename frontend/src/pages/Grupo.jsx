@@ -65,7 +65,8 @@ export function Grupo() {
   const handleDeleteDespesa = async (despesa) => {
     if (!window.confirm("Tem certeza que deseja excluir esta despesa?")) return;
     const token = localStorage.getItem('authToken');
-    const endpoint = `http://127.0.0.1:5000/despesas/${despesa.tipo}s/${despesa.id}`;
+    const tipoPlural = despesa.tipo === 'imovel' ? 'imoveis' : `${despesa.tipo}s`;
+    const endpoint = `http://127.0.0.1:5000/despesas/${tipoPlural}/${despesa.id}`;
     try {
       const response = await fetch(endpoint, {
         method: 'DELETE',

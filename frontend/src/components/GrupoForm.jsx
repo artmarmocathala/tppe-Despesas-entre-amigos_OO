@@ -1,48 +1,64 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export function GrupoForm({ onGroupCreated }) {
+export function GrupoForm({ onGroupCreated, grupoToEdit, onGroupUpdated }) {
   const [nome, setNome] = useState('');
   const [maxPessoas, setMaxPessoas] = useState('');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (grupoToEdit) {
+      setNome(grupoToEdit.nome);
+      setMaxPessoas(grupoToEdit.max_pessoas || '');
+    }
+  }, [grupoToEdit]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(null);
     const token = localStorage.getItem('authToken');
 
-    const newGroup = {
-      nome: nome,
+    const grupoData = {
+      nome,
       max_pessoas: maxPessoas ? parseInt(maxPessoas, 10) : null,
     };
 
+    const isEditing = !!grupoToEdit;
+    const method = isEditing ? 'PUT' : 'POST';
+    const endpoint = isEditing
+      ? `http://127.0.0.1:5000/grupos/${grupoToEdit.id}`
+      : 'http://127.0.0.1:5000/grupos/';
+
     try {
-      const response = await fetch('http://localhost:5000/grupos', {
-        method: 'POST',
+      const response = await fetch(endpoint, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(newGroup),
+        body: JSON.stringify(grupoData),
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao criar o grupo');
+        throw new Error(`Falha ao ${isEditing ? 'atualizar' : 'criar'} grupo`);
       }
-      
-      if (onGroupCreated) {
-        onGroupCreated();
+
+      if (isEditing) {
+        if (onGroupUpdated) onGroupUpdated();
+      } else {
+        if (onGroupCreated) onGroupCreated();
       }
-      
-    } catch (error) {
-      console.error('Erro ao criar grupo:', error);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Cadastrar Novo Grupo</h2>
+      <h3>{grupoToEdit ? 'Editar Grupo' : 'Adicionar Novo Grupo'}</h3>
       <div>
-        <label htmlFor="nome">Nome do Grupo:</label>
+        <label htmlFor="nome-grupo">Nome do Grupo:</label>
         <input
-          id="nome"
+          id="nome-grupo"
           type="text"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
@@ -50,15 +66,16 @@ export function GrupoForm({ onGroupCreated }) {
         />
       </div>
       <div>
-        <label htmlFor="max_pessoas">Máx. de Pessoas (opcional):</label>
+        <label htmlFor="max_pessoas-grupo">Máx. de Pessoas (opcional):</label>
         <input
-          id="max_pessoas"
+          id="max_pessoas-grupo"
           type="number"
           value={maxPessoas}
           onChange={(e) => setMaxPessoas(e.target.value)}
         />
       </div>
-      <button type="submit">Criar Grupo</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button type="submit">Salvar</button>
     </form>
   );
 }
