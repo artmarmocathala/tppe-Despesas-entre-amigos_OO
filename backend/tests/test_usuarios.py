@@ -4,7 +4,7 @@ from flask_jwt_extended import decode_token
 def test_criar_usuario_publico(client):
     """Testa a rota de criação de usuário, que é pública."""
     resp = client.post('/usuarios/', json={
-        "nome": "Alice", "email": "alice@example.com", "senha": "password"
+        "nome": "Alice", "email": "alice@example.com", "senha": "password", "cpf": "12345678909"
     })
     assert resp.status_code == 201
     assert resp.get_json()['email'] == "alice@example.com"
@@ -19,7 +19,7 @@ def test_listar_usuarios(auth_client):
 
 def test_listar_usuarios_negado_para_nao_superuser(client):
 
-    user_data = {"nome": "Bob", "email": "bob@naosuper.com", "senha": "password", "is_superuser": False}
+    user_data = {"nome": "Bob", "email": "bob@naosuper.com", "senha": "password", "is_superuser": False, "cpf": "12345678901"}
     resp = client.post('/usuarios/', json=user_data)
     assert resp.status_code == 201
 
@@ -38,7 +38,7 @@ class TestUsuarioCRUD:
     @pytest.mark.dependency()
     def test_criar_usuario_para_crud(self, auth_client):
         resp = auth_client.post('/usuarios/', json={
-            "nome": "Charlie", "email": "charlie@crud.com", "senha": "password"
+            "nome": "Charlie", "email": "charlie@crud.com", "senha": "password", "cpf": "12345678902"
         })
         assert resp.status_code == 201
         TestUsuarioCRUD.ids['usuario_id'] = resp.get_json()['id']
@@ -53,7 +53,7 @@ class TestUsuarioCRUD:
     @pytest.mark.dependency(depends=["TestUsuarioCRUD::test_criar_usuario_para_crud"])
     def test_obter_usuario_negado_para_nao_superuser(self, client):
 
-        user_data = {"nome": "Dave", "email": "dave@naosuper.com", "senha": "password", "is_superuser": False}
+        user_data = {"nome": "Dave", "email": "dave@naosuper.com", "senha": "password", "is_superuser": False, "cpf": "12345678903"}
         resp = client.post('/usuarios/', json=user_data)
         assert resp.status_code == 201
         login_data = {"email": user_data['email'], "senha": user_data['senha']}
@@ -81,7 +81,7 @@ class TestUsuarioCRUD:
 
     @pytest.mark.dependency(depends=["TestUsuarioCRUD::test_criar_usuario_para_crud"])
     def test_atualizar_usuario_negado(self, client):
-        user_data = {"nome": "Eve", "email": "eve@naosuper.com", "senha": "password", "is_superuser": False}
+        user_data = {"nome": "Eve", "email": "eve@naosuper.com", "senha": "password", "is_superuser": False, "cpf": "12345678904"}
         resp = client.post('/usuarios/', json=user_data)
         assert resp.status_code == 201
         login_data = {"email": user_data['email'], "senha": user_data['senha']}
@@ -107,7 +107,7 @@ class TestUsuarioCRUD:
 
     @pytest.mark.dependency(depends=["TestUsuarioCRUD::test_criar_usuario_para_crud"])
     def test_deletar_usuario_negado(self, client):
-        user_data = {"nome": "Frank", "email": "frank@naosuper.com", "senha": "password", "is_superuser": False}
+        user_data = {"nome": "Frank", "email": "frank@naosuper.com", "senha": "password", "is_superuser": False, "cpf": "12345678905"}
         resp = client.post('/usuarios/', json=user_data)
         assert resp.status_code == 201
         login_data = {"email": user_data['email'], "senha": "password"}

@@ -30,11 +30,13 @@ def create_app(database_uri=None):
     from routes.despesas import despesas_bp
     from routes.usuarios import usuarios_bp
     from routes.auth import auth_bp
+    from routes.stats import stats_bp
     app.register_blueprint(grupos_bp, url_prefix='/grupos')
     app.register_blueprint(pessoas_bp)
     app.register_blueprint(despesas_bp)
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
     app.register_blueprint(auth_bp)
+    app.register_blueprint(stats_bp)
 
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.yaml'
