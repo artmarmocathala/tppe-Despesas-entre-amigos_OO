@@ -18,7 +18,8 @@ class TestCompras:
 
         compra_data = {
             "valor": 125.50, "data": "2025-07-18", "pagador_id": TestCompras.ids['pessoa_id'], 
-            "nome_mercado": "Supermercado Teste"
+            "nome_mercado": "Supermercado Teste",
+            "itens": ["Leite", "Pão"]
         }
         compra_resp = auth_client.post(f"/grupos/{TestCompras.ids['grupo_id']}/despesas/compras", json=compra_data)
         assert compra_resp.status_code == 201
@@ -29,7 +30,9 @@ class TestCompras:
         compra_id = TestCompras.ids['compra_id']
         resp = auth_client.get(f'/despesas/compras/{compra_id}')
         assert resp.status_code == 200
-        assert resp.get_json()['nome_mercado'] == "Supermercado Teste"
+        data = resp.get_json()
+        assert data['nome_mercado'] == "Supermercado Teste"
+        assert data['itens'] == ["Leite", "Pão"]
         
     @pytest.mark.dependency(depends=["TestCompras::test_criar_compra"])
     def test_atualizar_compra(self, auth_client):
@@ -39,7 +42,8 @@ class TestCompras:
             "valor": 150.00,
             "data": "2025-07-19",
             "pagador_id": pessoa_id,
-            "nome_mercado": "Mercado Atualizado"
+            "nome_mercado": "Mercado Atualizado",
+            "itens": ["Leite", "Pão", "Queijo"]
         }
         resp = auth_client.put(f'/despesas/compras/{compra_id}', json=update_data)
         assert resp.status_code == 200

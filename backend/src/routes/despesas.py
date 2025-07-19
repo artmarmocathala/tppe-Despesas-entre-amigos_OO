@@ -108,6 +108,9 @@ def atualizar_compra(compra_id):
     compra.pagador_id = data.get('pagador_id', compra.pagador_id)
     compra.nome_mercado = data.get('nome_mercado', compra.nome_mercado)
     
+    if 'itens' in data:
+        compra.itens = data['itens']
+    
     db.session.commit()
     return jsonify(compra.to_dict())
 

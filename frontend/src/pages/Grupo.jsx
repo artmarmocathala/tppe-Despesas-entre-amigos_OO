@@ -124,6 +124,7 @@ export function Grupo() {
         <thead>
           <tr>
             <th>Tipo</th>
+            <th>Detalhes</th>
             <th>Valor</th>
             <th>Data</th>
             <th style={{ textAlign: 'right' }}>Ações</th>
@@ -133,6 +134,14 @@ export function Grupo() {
           {grupo.despesas.map(despesa => (
             <tr key={despesa.id}>
               <td>{despesa.tipo.charAt(0).toUpperCase() + despesa.tipo.slice(1)}</td>
+              <td>
+                {despesa.tipo === 'compra' && despesa.nome_mercado && (
+                  <small>Mercado: {despesa.nome_mercado}</small>
+                )}
+                {despesa.tipo === 'imovel' && despesa.endereco && (
+                  <small>Endereço: {despesa.endereco}</small>
+                )}
+              </td>
               <td>R$ {despesa.valor.toFixed(2)}</td>
               <td>{new Date(despesa.data).toLocaleDateString()}</td>
               <td style={{ textAlign: 'right' }}>

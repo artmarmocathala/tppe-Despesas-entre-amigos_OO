@@ -8,6 +8,7 @@ export function DespesaForm({ grupoId, pessoas, onDespesaCreated, despesaToEdit,
   
   const [nomeMercado, setNomeMercado] = useState('');
   const [endereco, setEndereco] = useState('');
+  const [itens, setItens] = useState(['']);
 
   const [error, setError] = useState(null);
 
@@ -17,13 +18,30 @@ export function DespesaForm({ grupoId, pessoas, onDespesaCreated, despesaToEdit,
       setValor(despesaToEdit.valor);
       setData(new Date(despesaToEdit.data).toISOString().split('T')[0]);
       setPagadorId(despesaToEdit.pagador_id);
+      
       if (despesaToEdit.tipo === 'compra') {
         setNomeMercado(despesaToEdit.nome_mercado || '');
+        setItens(despesaToEdit.itens && despesaToEdit.itens.length > 0 ? despesaToEdit.itens : ['']);
       } else if (despesaToEdit.tipo === 'imovel') {
         setEndereco(despesaToEdit.endereco || '');
       }
     }
   }, [despesaToEdit]);
+
+  const handleItemChange = (index, value) => {
+    const novosItens = [...itens];
+    novosItens[index] = value;
+    setItens(novosItens);
+  };
+
+  const handleAddItem = () => {
+    setItens([...itens, '']);
+  };
+
+  const handleRemoveItem = (index) => {
+    const novosItens = itens.filter((_, i) => i !== index);
+    setItens(novosItens);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,14 +50,15 @@ export function DespesaForm({ grupoId, pessoas, onDespesaCreated, despesaToEdit,
     const isEditing = !!despesaToEdit;
 
     const despesaData = {
-      valor: parseFloat(valor), 
-      data, 
+      valor: parseFloat(valor),
+      data,
       pagador_id: parseInt(pagadorId, 10),
     };
 
     let endpoint = '';
     if (tipo === 'compra') {
       despesaData.nome_mercado = nomeMercado;
+      despesaData.itens = itens.filter(item => item.trim() !== ''); // Filtra itens vazios
       endpoint = isEditing
         ? `http://127.0.0.1:5000/despesas/compras/${despesaToEdit.id}`
         : `http://127.0.0.1:5000/grupos/${grupoId}/despesas/compras`;
@@ -60,7 +79,9 @@ export function DespesaForm({ grupoId, pessoas, onDespesaCreated, despesaToEdit,
         body: JSON.stringify(despesaData),
       });
 
-      if (!response.ok) throw new Error(`Falha ao ${isEditing ? 'atualizar' : 'salvar'} despesa`);
+      if (!response.ok) {
+        throw new Error(`Falha ao ${isEditing ? 'atualizar' : 'salvar'} despesa`);
+      }
 
       if (isEditing) {
         if (onDespesaUpdated) onDespesaUpdated();
@@ -106,10 +127,31 @@ export function DespesaForm({ grupoId, pessoas, onDespesaCreated, despesaToEdit,
       </div>
 
       {tipo === 'compra' && (
-        <div>
-          <label htmlFor="nome_mercado">Nome do Mercado (opcional):</label>
-          <input id="nome_mercado" type="text" value={nomeMercado} onChange={(e) => setNomeMercado(e.target.value)} />
-        </div>
+        <>
+          <div>
+            <label htmlFor="nome_mercado">Nome do Mercado (opcional):</label>
+            <input id="nome_mercado" type="text" value={nomeMercado} onChange={(e) => setNomeMercado(e.target.value)} />
+          </div>
+          <div>
+            <label>Itens da Compra:</label>
+            {itens.map((item, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                <input
+                  type="text"
+                  placeholder={`Item ${index + 1}`}
+                  value={item}
+                  onChange={(e) => handleItemChange(index, e.target.value)}
+                />
+                <button type="button" onClick={() => handleRemoveItem(index)} style={{ marginLeft: '10px' }}>
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={handleAddItem}>
+              Adicionar Item
+            </button>
+          </div>
+        </>
       )}
 
       {tipo === 'imovel' && (
