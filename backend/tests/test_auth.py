@@ -24,7 +24,6 @@ def test_login_sucesso(client, test_user):
     assert resp.status_code == 200
     json_data = resp.get_json()
     assert 'token' in json_data
-    # Verifica se o claim is_superuser está presente e correto
     token = json_data['token']
     decoded = decode_token(token)
     assert decoded['is_superuser'] is True
