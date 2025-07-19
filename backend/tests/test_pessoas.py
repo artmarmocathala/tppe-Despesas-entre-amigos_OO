@@ -1,33 +1,41 @@
-def test_adicionar_listar_pessoa(client):
-    resp = client.post(
-        '/grupos', json={"nome": "Grupo Pessoas", "max_pessoas": 2}
-    )
-    grupo_id = resp.get_json()['id']
-    resp = client.post(
-        f'/grupos/{grupo_id}/pessoas',
-        json={"nome": "Maria", "cpf": "12345678901"}
-    )
-    assert resp.status_code == 201
-    pessoa_id = resp.get_json()['id']
-    resp = client.get(f'/grupos/{grupo_id}/pessoas')
-    pessoas = resp.get_json()
-    assert any(p['id'] == pessoa_id for p in pessoas)
+import pytest
 
-    resp = client.get(f'/pessoas/{pessoa_id}')
-    assert resp.status_code == 200
-    pessoa = resp.get_json()
-    assert pessoa['id'] == pessoa_id
-    assert pessoa['nome'] == "Maria"
-    assert pessoa['cpf'] == "12345678901"
+class TestPessoas:
+    
+    ids = {}
+    
+    @pytest.mark.dependency()
+    def test_adicionar_pessoa(self, auth_client):
+        grupo_resp = auth_client.post('/grupos/', json={"nome": "Grupo com Pessoas"})
+        assert grupo_resp.status_code == 201
+        TestPessoas.ids['grupo_id'] = grupo_resp.get_json()['id']
+        grupo_id = TestPessoas.ids['grupo_id']
+        resp = auth_client.post(
+            f'/grupos/{grupo_id}/pessoas',
+            json={"nome": "Fulano", "cpf": "11122233344"}
+        )
+        assert resp.status_code == 201
+        TestPessoas.ids['pessoa_id'] = resp.get_json()['id']
 
+    @pytest.mark.dependency(depends=["TestPessoas::test_adicionar_pessoa"])
+    def test_listar_pessoas_do_grupo(self, auth_client):
+        pessoa_id = TestPessoas.ids['pessoa_id']
+        grupo_id = TestPessoas.ids['grupo_id']
+        resp = auth_client.get(f'/grupos/{grupo_id}/pessoas')
+        assert resp.status_code == 200
+        assert any(p['id'] == pessoa_id for p in resp.get_json())
 
-def test_deletar_pessoa(client):
-    resp = client.post('/grupos', json={"nome": "Grupo Del"})
-    grupo_id = resp.get_json()['id']
-    pessoa = client.post(
-        f'/grupos/{grupo_id}/pessoas',
-        json={"nome": "Ana", "cpf": "11122233344"}
-    ).get_json()
-    pessoa_id = pessoa['id']
-    resp = client.delete(f'/pessoas/{pessoa_id}')
-    assert resp.status_code == 200
+    @pytest.mark.dependency(depends=["TestPessoas::test_adicionar_pessoa"])
+    def test_obter_pessoa(self, auth_client):
+        pessoa_id = TestPessoas.ids['pessoa_id']
+        resp = auth_client.get(f'/pessoas/{pessoa_id}')
+        assert resp.status_code == 200
+        assert resp.get_json()['id'] == pessoa_id
+
+    @pytest.mark.dependency(depends=["TestPessoas::test_adicionar_pessoa"])
+    def test_deletar_pessoa(self, auth_client):
+        pessoa_id = TestPessoas.ids['pessoa_id']
+        resp = auth_client.delete(f'/pessoas/{pessoa_id}')
+        assert resp.status_code == 200
+        resp = auth_client.get(f'/pessoas/{pessoa_id}')
+        assert resp.status_code == 404

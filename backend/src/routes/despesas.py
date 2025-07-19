@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
+from flask_jwt_extended import jwt_required
 from database import db
 from models import Compra, Imovel
 from datetime import datetime
@@ -10,6 +11,7 @@ despesas_bp = Blueprint('despesas', __name__)
 @despesas_bp.route(
     '/grupos/<int:grupo_id>/despesas/compras', methods=['POST']
 )
+@jwt_required()
 def registrar_compra(grupo_id):
     data = request.get_json()
     data_str = data.get('data')
@@ -35,6 +37,7 @@ def registrar_compra(grupo_id):
 @despesas_bp.route(
     '/grupos/<int:grupo_id>/despesas/imoveis', methods=['POST']
 )
+@jwt_required()
 def registrar_despesa_imovel(grupo_id):
     data = request.get_json()
     data_str = data.get('data')
@@ -59,6 +62,7 @@ def registrar_despesa_imovel(grupo_id):
 @despesas_bp.route(
     '/grupos/<int:grupo_id>/despesas', methods=['GET']
 )
+@jwt_required()
 def listar_despesas(grupo_id):
     despesas = []
     compras = Compra.query.filter_by(grupo_id=grupo_id).all()
@@ -71,6 +75,7 @@ def listar_despesas(grupo_id):
 @despesas_bp.route(
     '/despesas/compras/<int:compra_id>', methods=['GET']
 )
+@jwt_required()
 def obter_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:
@@ -81,6 +86,7 @@ def obter_compra(compra_id):
 @despesas_bp.route(
     '/despesas/imoveis/<int:imovel_id>', methods=['GET']
 )
+@jwt_required()
 def obter_imovel(imovel_id):
     imovel = db.session.get(Imovel, imovel_id)
     if not imovel:
@@ -91,6 +97,7 @@ def obter_imovel(imovel_id):
 @despesas_bp.route(
     '/despesas/compras/<int:compra_id>', methods=['DELETE']
 )
+@jwt_required()
 def deletar_compra(compra_id):
     compra = db.session.get(Compra, compra_id)
     if not compra:
@@ -105,6 +112,7 @@ def deletar_compra(compra_id):
 @despesas_bp.route(
     '/despesas/imoveis/<int:imovel_id>', methods=['DELETE']
 )
+@jwt_required()
 def deletar_imovel(imovel_id):
     imovel = db.session.get(Imovel, imovel_id)
     if not imovel:

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
+from flask_jwt_extended import jwt_required
 from database import db
 from models import Pessoa, Grupo
 
@@ -6,6 +7,7 @@ pessoas_bp = Blueprint('pessoas', __name__)
 
 
 @pessoas_bp.route('/grupos/<int:grupo_id>/pessoas', methods=['POST'])
+@jwt_required()
 def adicionar_pessoa(grupo_id):
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
@@ -26,12 +28,14 @@ def adicionar_pessoa(grupo_id):
 
 
 @pessoas_bp.route('/grupos/<int:grupo_id>/pessoas', methods=['GET'])
+@jwt_required()
 def listar_pessoas(grupo_id):
     pessoas = Pessoa.query.filter_by(grupo_id=grupo_id).all()
     return jsonify([pessoa.to_dict() for pessoa in pessoas])
 
 
 @pessoas_bp.route('/pessoas/<int:pessoa_id>', methods=['GET'])
+@jwt_required()
 def obter_pessoa(pessoa_id):
     pessoa = db.session.get(Pessoa, pessoa_id)
     if not pessoa:
@@ -40,6 +44,7 @@ def obter_pessoa(pessoa_id):
 
 
 @pessoas_bp.route('/pessoas/<int:pessoa_id>', methods=['PUT'])
+@jwt_required()
 def atualizar_pessoa(pessoa_id):
     pessoa = db.session.get(Pessoa, pessoa_id)
     if not pessoa:

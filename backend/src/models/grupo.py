@@ -1,4 +1,5 @@
-from database import db 
+from database import db
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Grupo(db.Model):
     __tablename__ = 'grupos'
@@ -12,6 +13,10 @@ class Grupo(db.Model):
     usuario = db.relationship('Usuario', back_populates='grupos')
     pessoas = db.relationship('Pessoa', back_populates='grupo')
     despesas = db.relationship('Despesa', back_populates='grupo')
+    
+    @hybrid_property
+    def total_despesas(self):
+        return sum(d.valor for d in self.despesas)
 
     def to_dict(self):
         return {
@@ -20,11 +25,12 @@ class Grupo(db.Model):
             'max_pessoas': self.max_pessoas,
             'usuario_id': self.usuario_id,
             'qtd_pessoas': len(self.pessoas),
-            'qtd_despesas': len(self.despesas)
+            'qtd_despesas': len(self.despesas),
+            'total_despesas': self.total_despesas
         }
 
     def dividir_despesas(self):
-        total_despesas = sum(d.valor for d in self.despesas)
+        total_despesas = self.total_despesas
         qtd_pessoas = len(self.pessoas)
         if qtd_pessoas == 0:
             return {

@@ -5,7 +5,7 @@ from models import Usuario
 usuarios_bp = Blueprint('usuarios', __name__)
 
 
-@usuarios_bp.route('/usuarios', methods=['POST'])
+@usuarios_bp.route('/', methods=['POST'])
 def criar_usuario():
     data = request.get_json()
     if not all(k in data for k in ('nome', 'email', 'senha')):
@@ -25,13 +25,13 @@ def criar_usuario():
     return jsonify(usuario.to_dict()), 201
 
 
-@usuarios_bp.route('/usuarios', methods=['GET'])
+@usuarios_bp.route('/', methods=['GET'])
 def listar_usuarios():
     usuarios = Usuario.query.all()
     return jsonify([u.to_dict() for u in usuarios])
 
 
-@usuarios_bp.route('/usuarios/<int:usuario_id>', methods=['GET'])
+@usuarios_bp.route('/<int:usuario_id>', methods=['GET'])
 def obter_usuario(usuario_id):
     usuario = db.session.get(Usuario, usuario_id)
     if not usuario:
@@ -39,7 +39,7 @@ def obter_usuario(usuario_id):
     return jsonify(usuario.to_dict())
 
 
-@usuarios_bp.route('/usuarios/<int:usuario_id>', methods=['PUT'])
+@usuarios_bp.route('/<int:usuario_id>', methods=['PUT'])
 def atualizar_usuario(usuario_id):
     usuario = db.session.get(Usuario, usuario_id)
     if not usuario:
@@ -55,7 +55,7 @@ def atualizar_usuario(usuario_id):
     return jsonify(usuario.to_dict())
 
 
-@usuarios_bp.route('/usuarios/<int:usuario_id>', methods=['DELETE'])
+@usuarios_bp.route('/<int:usuario_id>', methods=['DELETE'])
 def deletar_usuario(usuario_id):
     usuario = db.session.get(Usuario, usuario_id)
     if not usuario:

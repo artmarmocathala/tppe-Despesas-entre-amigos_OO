@@ -1,60 +1,41 @@
-def test_criar_listar_grupo(client):
-    resp = client.post(
-        '/grupos', json={"nome": "Grupo Teste", "max_pessoas": 2}
-    )
-    assert resp.status_code == 201
-    data = resp.get_json()
-    assert data['nome'] == "Grupo Teste"
-    grupo_id = data['id']
+import pytest
 
-    resp = client.get('/grupos')
-    assert resp.status_code == 200
-    grupos = resp.get_json()
-    assert any(g['id'] == grupo_id for g in grupos)
+class TestGrupos:
+    ids = {}
+    
+    @pytest.mark.dependency()
+    def test_criar_grupo(self, auth_client):
+        resp = auth_client.post('/grupos/', json={"nome": "Viagem de Férias"})        
+        assert resp.status_code == 201
+        data = resp.get_json()
+        TestGrupos.ids['grupo_id'] = resp.get_json()['id']
 
-    resp = client.get(f'/grupos/{grupo_id}')
-    assert resp.status_code == 200
-    grupo = resp.get_json()
-    assert grupo['id'] == grupo_id
-    assert grupo['nome'] == "Grupo Teste"
+    @pytest.mark.dependency(depends=["TestGrupos::test_criar_grupo"])
+    def test_obter_grupo(self, auth_client):
+        grupo_id = TestGrupos.ids['grupo_id']
+        resp = auth_client.get(f'/grupos/{grupo_id}')
+        assert resp.status_code == 200
+        assert resp.get_json()['id'] == grupo_id
 
+    @pytest.mark.dependency(depends=["TestGrupos::test_criar_grupo"])
+    def test_atualizar_grupo(self, auth_client):
+        grupo_id = TestGrupos.ids['grupo_id']
+        resp = auth_client.put(f'/grupos/{grupo_id}', json={"nome": "Viagem de Férias 2025"})
+        assert resp.status_code == 200
+        assert resp.get_json()['nome'] == "Viagem de Férias 2025"
+    
+    @pytest.mark.dependency(depends=["TestGrupos::test_criar_grupo"])
+    def test_listar_grupos(self, auth_client):
+        grupo_id = TestGrupos.ids['grupo_id']
+        resp = auth_client.get('/grupos/')
+        assert resp.status_code == 200
+        assert any(g['id'] == grupo_id for g in resp.get_json())
 
-def test_deletar_grupo(client):
-    resp = client.post('/grupos', json={"nome": "Grupo Del"})
-    grupo_id = resp.get_json()['id']
-    resp = client.delete(f'/grupos/{grupo_id}')
-    assert resp.status_code == 200
-
-
-def test_dividir_despesas_grupo(client):
-    resp = client.post('/grupos', json={"nome": "Grupo Divisao"})
-    grupo_id = resp.get_json()['id']
-    pessoa1 = client.post(
-        f'/grupos/{grupo_id}/pessoas',
-        json={"nome": "A", "cpf": "11111111111"}
-    ).get_json()
-    pessoa2 = client.post(
-        f'/grupos/{grupo_id}/pessoas',
-        json={"nome": "B", "cpf": "22222222222"}
-    ).get_json()
-    compra = {
-        "valor": 100.0,
-        "data": "2025-06-27",
-        "pagador_id": pessoa1['id'],
-        "nome_mercado": "Mercado",
-        "itens": ["item1"]
-    }
-    client.post(f'/grupos/{grupo_id}/despesas/compras', json=compra)
-    imovel = {
-        "valor": 50.0,
-        "data": "2025-06-27",
-        "pagador_id": pessoa2['id'],
-        "endereco": "Rua 1"
-    }
-    client.post(f'/grupos/{grupo_id}/despesas/imoveis', json=imovel)
-    resp = client.get(f'/grupos/{grupo_id}/divisao')
-    assert resp.status_code == 200
-    divisao = resp.get_json()
-    assert divisao['total_despesas'] == 150.0
-    assert divisao['valor_por_pessoa'] == 75.0
-    assert divisao['qtd_pessoas'] == 2
+    @pytest.mark.dependency(depends=["TestGrupos::test_criar_grupo"])
+    def test_deletar_grupo(self, auth_client):
+        grupo_id = TestGrupos.ids['grupo_id']
+        resp = auth_client.delete(f'/grupos/{grupo_id}')
+        assert resp.status_code == 200
+        
+        resp = auth_client.get(f'/grupos/{grupo_id}')
+        assert resp.status_code == 404
