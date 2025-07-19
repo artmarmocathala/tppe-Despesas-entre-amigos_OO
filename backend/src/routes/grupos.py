@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from sqlalchemy.orm import joinedload
 from database import db
 from models import Grupo, Pessoa, Despesa
 
@@ -26,16 +27,25 @@ def criar_grupo():
 @jwt_required()
 def listar_grupos():
     usuario_id = get_jwt_identity()
-    grupos = Grupo.query.all()
+    grupos = Grupo.query.options(
+        joinedload(Grupo.pessoas), 
+        joinedload(Grupo.despesas)
+    ).filter_by(usuario_id=int(usuario_id)).all()
+    #grupos = Grupo.query.filter_by(usuario_id=int(usuario_id)).all()
     return jsonify([grupo.to_dict() for grupo in grupos])
 
 
 @grupos_bp.route('/<int:grupo_id>', methods=['GET'])
 @jwt_required()
 def obter_grupo(grupo_id):
+    usuario_id = get_jwt_identity()
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
         abort(404)
+    if str(grupo.usuario_id) != usuario_id:
+        abort(403, 
+              description=
+              "Acesso não autorizado a este grupo.")
     dados_grupo = grupo.to_dict()
     dados_grupo['pessoas'] = [p.to_dict() for p in grupo.pessoas]
     dados_grupo['despesas'] = [d.to_dict() for d in grupo.despesas]
@@ -47,18 +57,28 @@ def obter_grupo(grupo_id):
 @grupos_bp.route('/<int:grupo_id>/divisao', methods=['GET'])
 @jwt_required()
 def dividir_despesas(grupo_id):
+    usuario_id = get_jwt_identity()
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
         abort(404)
+    if str(grupo.usuario_id) != usuario_id:
+        abort(403, 
+              description=
+              "Acesso não autorizado a este grupo.")
     return jsonify(grupo.dividir_despesas())
 
 
 @grupos_bp.route('/<int:grupo_id>', methods=['PUT'])
 @jwt_required()
 def atualizar_grupo(grupo_id):
+    usuario_id = get_jwt_identity()
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
         abort(404)
+    if str(grupo.usuario_id) != usuario_id:
+        abort(403, 
+              description=
+              "Acesso não autorizado para editar este grupo.")
     data = request.get_json()
     grupo.nome = data.get('nome', grupo.nome)
     grupo.max_pessoas = data.get(
@@ -71,9 +91,14 @@ def atualizar_grupo(grupo_id):
 @grupos_bp.route('/<int:grupo_id>', methods=['DELETE'])
 @jwt_required()
 def deletar_grupo(grupo_id):
+    usuario_id = get_jwt_identity()
     grupo = db.session.get(Grupo, grupo_id)
     if not grupo:
         abort(404)
+    if str(grupo.usuario_id) != usuario_id:
+        abort(403, 
+              description=
+              "Acesso não autorizado para deletar este grupo.")
     for despesa in grupo.despesas:
         db.session.delete(despesa)
     for pessoa in grupo.pessoas:

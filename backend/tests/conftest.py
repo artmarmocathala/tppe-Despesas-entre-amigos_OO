@@ -54,3 +54,25 @@ def auth_client(app, client):
         del client.environ_base['HTTP_AUTHORIZATION']
 
 
+# segundo cliente logado p testes com mais de um usuario     
+@pytest.fixture(scope='class')
+def auth_client_B(client):
+    user_data = {
+        "nome": "User B",
+        "email": "userB@example.com",
+        "senha": "password456"
+    }
+    resp_create = client.post('/usuarios/', json=user_data)
+    assert resp_create.status_code == 201
+
+    login_data = {"email": user_data['email'], "senha": user_data['senha']}
+    resp_login = client.post('/login', json=login_data)
+    assert resp_login.status_code == 200
+    
+    client_b = client.application.test_client()
+    token = resp_login.get_json()['token']
+    client_b.environ_base['HTTP_AUTHORIZATION'] = f'Bearer {token}'
+    
+    return client_b
+
+

@@ -39,3 +39,62 @@ class TestGrupos:
         
         resp = auth_client.get(f'/grupos/{grupo_id}')
         assert resp.status_code == 404
+        
+
+class TestGrupoPermissions:
+    ids = {}
+
+    @pytest.mark.dependency()
+    def test_setup_cenario_permissoes(self, auth_client, auth_client_B):
+        """
+        Cria um grupo com o Usuário A (auth_client).
+        Também cria um grupo com o Usuário B (auth_client_B) para o teste de listagem.
+        """
+        # Usuário A cria seu grupo
+        resp_A = auth_client.post('/grupos/', json={"nome": "Grupo do Usuário A"})
+        assert resp_A.status_code == 201
+        TestGrupoPermissions.ids['grupo_id_A'] = resp_A.get_json()['id']
+        
+        # Usuário B cria seu grupo
+        resp_B = auth_client_B.post('/grupos/', json={"nome": "Grupo do Usuário B"})
+        assert resp_B.status_code == 201
+        TestGrupoPermissions.ids['grupo_id_B'] = resp_B.get_json()['id']
+
+    @pytest.mark.dependency(depends=["TestGrupoPermissions::test_setup_cenario_permissoes"])
+    def test_outro_usuario_nao_pode_obter_grupo(self, auth_client_B):
+        """Usuário B não pode ver detalhes do grupo do Usuário A."""
+        grupo_id = TestGrupoPermissions.ids['grupo_id_A']
+        resp = auth_client_B.get(f'/grupos/{grupo_id}')
+        assert resp.status_code == 403 # Proibido
+
+    @pytest.mark.dependency(depends=["TestGrupoPermissions::test_setup_cenario_permissoes"])
+    def test_outro_usuario_nao_pode_atualizar_grupo(self, auth_client_B):
+        """Usuário B não pode editar o grupo do Usuário A."""
+        grupo_id = TestGrupoPermissions.ids['grupo_id_A']
+        resp = auth_client_B.put(f'/grupos/{grupo_id}', json={"nome": "Invasão"})
+        assert resp.status_code == 403
+
+    @pytest.mark.dependency(depends=["TestGrupoPermissions::test_setup_cenario_permissoes"])
+    def test_outro_usuario_nao_pode_deletar_grupo(self, auth_client_B):
+        """Usuário B não pode deletar o grupo do Usuário A."""
+        grupo_id = TestGrupoPermissions.ids['grupo_id_A']
+        resp = auth_client_B.delete(f'/grupos/{grupo_id}')
+        assert resp.status_code == 403
+    
+    @pytest.mark.dependency(depends=["TestGrupoPermissions::test_setup_cenario_permissoes"])
+    def test_listar_grupos_mostra_apenas_os_seus(self, auth_client_B):
+        """Garante que a lista de grupos do Usuário B contém apenas o seu grupo."""
+        grupo_id_A = TestGrupoPermissions.ids['grupo_id_A']
+        grupo_id_B = TestGrupoPermissions.ids['grupo_id_B']
+
+        resp_B = auth_client_B.get('/grupos/')
+        assert resp_B.status_code == 200
+        
+        lista_grupos_B = resp_B.get_json()
+        
+        # Verifica que a lista do Usuário B tem exatamente 1 grupo
+        assert len(lista_grupos_B) == 1
+        # Verifica que o grupo na lista é o dele
+        assert lista_grupos_B[0]['id'] == grupo_id_B
+        # Verifica que o grupo do Usuário A NÃO está na lista dele
+        assert not any(g['id'] == grupo_id_A for g in lista_grupos_B)
